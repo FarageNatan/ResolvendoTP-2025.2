@@ -4,29 +4,22 @@ import java.util.Scanner;
 
 public class TP01Q04_AlteracaoAleatoria {
     static Scanner sc = new Scanner(System.in);
-    static Random gerador = new Random(4); // Gerador com seed fixa
-    static int chamadas = 0;
-
+    
     public static String alteracaoAleatoria(String palavra){
-        for (int i = 0; i < chamadas * 2; i++) { //chamadas diferentes, avançando o gerador;
-            gerador.nextInt();
-        }
-
+        Random gerador = new Random(4); // Gerador com seed fixa
+        char[] palavraModificada = new char[palavra.length()];
         char letraOriginal = (char) ('a' + Math.abs(gerador.nextInt()) % 26);
         char letraSubstituta = (char) ('a' + Math.abs(gerador.nextInt()) % 26);
 
-        chamadas++;
-
-        String resultado = "";
         for(int i = 0; i < palavra.length(); i++){
             char atual = palavra.charAt(i);
             if(atual == letraOriginal){
-                resultado += letraSubstituta;
+                palavraModificada[i] = letraSubstituta;
             } else {
-                resultado += atual;
+                palavraModificada[i] = atual;
             }
         }
-        return resultado;
+        return new String(palavraModificada);
     }
 
     public static void main(String[] args) {
