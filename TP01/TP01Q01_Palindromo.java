@@ -1,3 +1,4 @@
+package TP01;
 import java.util.Scanner;
 
 public class TP01Q01_Palindromo{
