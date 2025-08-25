@@ -1,4 +1,4 @@
-package TP01;
+// package TP01;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -6,7 +6,7 @@ public class TP01Q04_AlteracaoAleatoria {
     static Scanner sc = new Scanner(System.in);
     
     public static String alteracaoAleatoria(String palavra){
-        Random gerador = new Random(4); // Gerador com seed fixa
+        Random gerador = new Random(); // Gerador com seed fixa
         char[] palavraModificada = new char[palavra.length()];
         char letraOriginal = (char) ('a' + Math.abs(gerador.nextInt()) % 26);
         char letraSubstituta = (char) ('a' + Math.abs(gerador.nextInt()) % 26);
