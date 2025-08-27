@@ -11,22 +11,22 @@ int contarCaracteres(char palavra[]) {
 }
 
 bool somenteVogal(char palavra[], int tam){
-    tam = contarCaracteres(palavra);
     bool resposta = true;
     for(int i = 0; i < tam; i++){
         if(palavra[i] != 'a' && palavra[i] != 'e' && palavra[i] != 'i' && palavra[i] != 'o' && palavra[i] != 'u'){
             resposta = false;
+            i = tam;
         }
     }
     return resposta;
 }
 
 bool somenteConsoante(char palavra[], int tam){
-    tam = contarCaracteres(palavra);
     bool resposta = true;
     for(int i = 0; i < tam; i++){
         if(palavra[i] == 'a' || palavra[i] == 'e' || palavra[i] == 'i' || palavra[i] == 'o' || palavra[i] == 'u'){
             resposta = false;
+            i = tam;
         }
     }
     return resposta;
@@ -34,21 +34,25 @@ bool somenteConsoante(char palavra[], int tam){
 
 bool ehInteiro(char palavra[], int tam){
     bool resposta = true;
-    tam = contarCaracteres(palavra);
     for(int i = 0; i < tam; i++){
         if(palavra[i] == ',' || palavra[i] == '.'){
             resposta = false;
+            i = tam;
         }
     }
     return resposta;
 }
 
-bool ehReal(char palavra[], int tam){
-    bool resposta  = false;
-    for(int i = 0; i < tam; i++){
-        if(palavra[i] == ','){
-            resposta = true;
+bool ehReal(char palavra[], int tam) {
+    int countPonto = 0;
+    bool resposta = false;
+    for (int i = 0; i < tam; i++) {
+        if (palavra[i] == '.' || palavra[i] == ',') {
+            countPonto++;
         }
+    }
+    if (countPonto == 1) {
+        resposta = true;
     }
     return resposta;
 }
@@ -84,6 +88,7 @@ int main(){
         }
         printf("\n");
         scanf(" %[^\n]", palavra);
+        tamanho = contarCaracteres(palavra);
     }
 
     return 0;
