@@ -13,7 +13,7 @@ int contarCaracteres(char palavra[]) {
 bool somenteVogal(char palavra[], int tam){
     bool resposta = true;
     for(int i = 0; i < tam; i++){
-        if(palavra[i] != 'a' && palavra[i] != 'e' && palavra[i] != 'i' && palavra[i] != 'o' && palavra[i] != 'u'){
+        if(palavra[i] != 'a' && palavra[i] != 'e' && palavra[i] != 'i' && palavra[i] != 'o' && palavra[i] != 'u' && palavra[i] != 'A' && palavra[i] != 'E' && palavra[i] != 'I' && palavra[i] != 'O' && palavra[i] != 'U'){
             resposta = false;
             i = tam;
         }
@@ -24,7 +24,7 @@ bool somenteVogal(char palavra[], int tam){
 bool somenteConsoante(char palavra[], int tam){
     bool resposta = true;
     for(int i = 0; i < tam; i++){
-        if(palavra[i] == 'a' || palavra[i] == 'e' || palavra[i] == 'i' || palavra[i] == 'o' || palavra[i] == 'u'){
+        if(palavra[i] == 'a' || palavra[i] == 'e' || palavra[i] == 'i' || palavra[i] == 'o' || palavra[i] == 'u' && palavra[i] == 'A' && palavra[i] == 'E' && palavra[i] == 'I' && palavra[i] == 'O' && palavra[i] == 'U'){
             resposta = false;
             i = tam;
         }
@@ -35,7 +35,7 @@ bool somenteConsoante(char palavra[], int tam){
 bool ehInteiro(char palavra[], int tam){
     bool resposta = true;
     for(int i = 0; i < tam; i++){
-        if(palavra[i] == ',' || palavra[i] == '.'){
+        if(!(palavra[i] >= '0' && palavra[i] <= '9')){
             resposta = false;
             i = tam;
         }
