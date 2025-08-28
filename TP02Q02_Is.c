@@ -84,7 +84,7 @@ int main(){
         if (numReal == true) {
             printf("SIM ");
         } else {
-            printf("NAO ");
+            printf("NAO");
         }
         printf("\n");
         scanf(" %[^\n]", palavra);
