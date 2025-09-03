@@ -1,57 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// int somaDigitosRec(int numero){
-//     int soma = 0;
-//     if(numero / 10 == 0){
-//         soma += numero;
-//     } else{
-//         soma += numero % 10 + somaDigitosRec((numero / 10));
-//     }
-//     return soma;
-// }
-
-
-// int main(){
-//     int numero = 0, soma = 0;
-//     scanf("%i", &numero);
-//     soma = somaDigitosRec(numero);
-//     printf("%i", soma);
-
-
-//     return 0;
-// }
-
-int contarCaracteres(char palavra[]) {
+int stringParaInt(char palavra[]) {
+    int resultado = 0;
     int i = 0;
     while (palavra[i] != '\0') {
+        if (palavra[i] >= '0' && palavra[i] <= '9') {
+            resultado = resultado * 10 + (palavra[i] - '0'); //quando uma operacao numerica eh realizada, ocorre a conversao de caracter para valor
+        }
         i++;
     }
-    return i;
+    return resultado;
 }
 
-
-int somaDigitosRec(char numero[], int tam, int i){
-    int soma;
-    if(numero[i] == '\0'){
-        soma = 0;
-    }else{
-        
+int somaDigitosRec(int valor) {
+    if (valor == 0) {
+        return 0;
+    } else {
+        return (valor % 10) + somaDigitosRec(valor / 10); //somar o último dígito (valor % 10) e depois chamar a si mesma com o restante do número (valor / 10).
     }
-
 }
 
-
-int main(){
-    char numero[1000];
-    scanf(" %[^\n]", numero);
-    int tamanho = contarCaracteres(numero);
-    int soma = 0;
+int main() {
+    char palavra[1000];
     
-    while (!(numero[0] == 'F' && numero[1] == 'I' && numero[2] == 'M' && numero[3] == '\0')) {
-        soma = somaDigitosRec(numero, tamanho);
+    scanf(" %[^\n]", palavra);
+    
+    while (!(palavra[0] == 'F' && palavra[1] == 'I' && palavra[2] == 'M' && palavra[3] == '\0')) {
+        int numero = stringParaInt(palavra);
+        int soma = somaDigitosRec(numero);
+        
         printf("%i\n", soma);
-        scanf(" %[^\n]", numero);
+        
+        scanf(" %[^\n]", palavra);
     }
+    
     return 0;
 }
