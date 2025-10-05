@@ -15,7 +15,7 @@ public class Game{
     public int achievements; 
     public String[] publishers;
     public String[] developers;
-    public String[] categories;//a partir daq ainda nao fiz
+    public String[] categories;
     public String[] genres;
     public String[] tags;
 
@@ -102,12 +102,11 @@ public class Game{
     //----- Tratamento de dados-------
 
     public static String[] splitPorAspas(String linhaCsv) {
-        String[] campos = new String[14]; // Sabemos que são 14 campos no CSV
+        String[] campos = new String[14];
         String campoAtual = "";
         int indiceCampo = 0;
         boolean emAspas = false;
-        
-        // length e charAt permitidos
+    
         int tamanhoLinha = linhaCsv.length();
 
         for (int i = 0; i < tamanhoLinha; i++) {
@@ -139,7 +138,7 @@ public class Game{
             campos[indiceCampo] = campoAtual;
         }
         
-        return campos; // Único return
+        return campos;
     }
 
     public static Game leitura(String linhaCsv){
@@ -174,7 +173,7 @@ public class Game{
 
         String[] categoriesTratadas = trataListaColchetes(partesJogo[11]);
 
-        String[]genresTratados = trataListaColchetes(partesJogo[12]);
+        String[] genresTratados = trataListaColchetes(partesJogo[12]);
 
         String[] tagsTratadas = trataListaColchetes(partesJogo[13]);
 
