@@ -3,6 +3,7 @@ package TP04;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Game{
 
@@ -253,58 +254,45 @@ public class Game{
         return resultado;
     } 
 
-    public static String trataData(String dataOriginal){
-        String[] partesData = dataOriginal.split(" ");
+    public static String trataData(String data) {
+        if (data == null || data.isEmpty()) return "0000-00-00";
 
-        String mesAbreviado = partesData[0];
-        String diaVirgula = partesData[1];
-        String ano = partesData[2];
+        String[] partes = data.split(" ");
+        String mes = "01";
+        String dia = "01";
+        String ano = "0000";
 
-        String dia = "";
-        int tamanhoDia = diaVirgula.length();
-        for(int i = 0; i < tamanhoDia; i++){
-            char caracter = diaVirgula.charAt(i);
-            if(caracter != ',') dia += caracter;
+        // Converter nome do mês para número
+        switch (partes[0]) {
+            case "Jan": mes = "01"; break;
+            case "Feb": mes = "02"; break;
+            case "Mar": mes = "03"; break;
+            case "Apr": mes = "04"; break;
+            case "May": mes = "05"; break;
+            case "Jun": mes = "06"; break;
+            case "Jul": mes = "07"; break;
+            case "Aug": mes = "08"; break;
+            case "Sep": mes = "09"; break;
+            case "Oct": mes = "10"; break;
+            case "Nov": mes = "11"; break;
+            case "Dec": mes = "12"; break;
         }
 
-        String mesNumero;
-        if (mesAbreviado.equals("Jan")) {
-            mesNumero = "01";
-        } else if (mesAbreviado.equals("Feb")) {
-            mesNumero = "02";
-        } else if (mesAbreviado.equals("Mar")) {
-            mesNumero = "03";
-        } else if (mesAbreviado.equals("Apr")) {
-            mesNumero = "04";
-        } else if (mesAbreviado.equals("May")) {
-            mesNumero = "05";
-        } else if (mesAbreviado.equals("Jun")) {
-            mesNumero = "06";
-        } else if (mesAbreviado.equals("Jul")) {
-            mesNumero = "07";
-        } else if (mesAbreviado.equals("Aug")) {
-            mesNumero = "08";
-        } else if (mesAbreviado.equals("Sep")) {
-            mesNumero = "09";
-        } else if (mesAbreviado.equals("Oct")) {
-            mesNumero = "10";
-        } else if (mesAbreviado.equals("Nov")) {
-            mesNumero = "11";
-        } else if (mesAbreviado.equals("Dec")) {
-            mesNumero = "12";
-        } else {
-            // Se o mês for desconhecido ou estiver incompleto (Regra: usa "01" se faltar)
-            mesNumero = "01"; 
+        // Se há três partes (ex: "Dec 1, 2013")
+        if (partes.length == 3) {
+            dia = partes[1].replace(",", "");
+            ano = partes[2];
+        }
+        // Se há duas partes (ex: "Dec 2013")
+        else if (partes.length == 2) {
+            ano = partes[1];
         }
 
-        if(dia.length() == 1){
-            dia = "0" + dia;
-        }
-        
-        String dataFormatada = dia + "/" + mesNumero + "/" + ano;
-
-        return dataFormatada;
+        // Garantir formato YYYY-MM-DD
+        if (dia.length() == 1) dia = "0" + dia;
+        return dia + "/" + mes + "/" + ano;
     }
+
 
     //------- Funcoes de Impressao---------
 
@@ -372,7 +360,7 @@ public class Game{
     }
 
     //------- Leitura CSV----------
-    public static Game[] lerArquivoCSV() {
+    public static Game[] lerArquivoCSV(String caminhoArquivo) {
         Game[] jogos = new Game[0];
         BufferedReader leitor = null;
         String linha = "";
@@ -380,7 +368,7 @@ public class Game{
         boolean primeiraLinha = true;
 
         try {
-            leitor = new BufferedReader(new FileReader("C:\\Users\\natan\\Documents"));
+            leitor = new BufferedReader(new FileReader(caminhoArquivo));
             linha = leitor.readLine();
 
             while (linha != null) {
@@ -394,14 +382,14 @@ public class Game{
             leitor.close();
 
             jogos = new Game[quantidade];
-            leitor = new BufferedReader(new FileReader("C:\\Users\\natan\\Documents"));
+            leitor = new BufferedReader(new FileReader(caminhoArquivo));
             linha = leitor.readLine();
             primeiraLinha = true;
 
             int indice = 0;
             while (linha != null) {
                 if (!primeiraLinha) {
-                    Game jogo = leitura(linha);
+                    Game jogo = Game.leitura(linha);
                     jogos[indice] = jogo;
                     indice = indice + 1;
                 } else {
@@ -416,5 +404,38 @@ public class Game{
         }
 
         return jogos;
+    }
+
+    public static void buscarEImprimirJogo(Game[] jogos, String entrada) {
+        int i = 0;
+        int tamanho = jogos.length;
+        String saida = "";
+
+        while (i < tamanho) {
+            String idTexto = "" + jogos[i].getId();
+            if (idTexto.equals(entrada)) {
+                saida = jogos[i].imprimir();
+                i = tamanho;
+            } else {
+                i = i + 1;
+            }
+        }
+
+        if (saida.length() > 0) {
+            System.out.println(saida);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
+        String entrada = sc.nextLine();
+
+        while (!entrada.equals("FIM")) {
+            buscarEImprimirJogo(jogos, entrada);
+            entrada = sc.nextLine();
+        }
+
+        sc.close();
     }
 }
