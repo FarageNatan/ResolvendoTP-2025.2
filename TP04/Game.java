@@ -1,5 +1,9 @@
 package TP04;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Game{
 
     //------ Atributos da classe Game--------
@@ -304,20 +308,113 @@ public class Game{
 
     //------- Funcoes de Impressao---------
 
-    public static String formatarArray(String[] array){
-        String resultado = "";
-        if(array == null || array.length == 0 || (array.length == 1 && array[0] != null && array[0].trim().isEmpty())){
-            resultado = "[]";
+    public String imprimir() {
+        String saida = "";
+        int i;
+
+        saida += "=> " + id + " ## " + name + " ## " + releaseDate + " ## " + estimatedOwners + " ## " + price + " ## [";
+
+        for (i = 0; i < supportedLanguages.length; i++) {
+            saida += supportedLanguages[i];
+            if (i + 1 < supportedLanguages.length) {
+                saida += ", ";
+            }
         }
-        
-        resultado = "[";
-        int tamanho = array.length;
-        for(int i = 0; i < tamanho; i++){
-            resultado += array
+
+        saida += "] ## " + metacriticScore + " ## " + userScore + " ## " + achievements + " ## [";
+
+        for (i = 0; i < publishers.length; i++) {
+            saida += publishers[i];
+            if (i + 1 < publishers.length) {
+                saida += ", ";
+            }
         }
-        
+
+        saida += "] ## [";
+
+        for (i = 0; i < developers.length; i++) {
+            saida += developers[i];
+            if (i + 1 < developers.length) {
+                saida += ", ";
+            }
+        }
+
+        saida += "] ## [";
+
+        for (i = 0; i < categories.length; i++) {
+            saida += categories[i];
+            if (i + 1 < categories.length) {
+                saida += ", ";
+            }
+        }
+
+        saida += "] ## [";
+
+        for (i = 0; i < genres.length; i++) {
+            saida += genres[i];
+            if (i + 1 < genres.length) {
+                saida += ", ";
+            }
+        }
+
+        saida += "] ## [";
+
+        for (i = 0; i < tags.length; i++) {
+            saida += tags[i];
+            if (i + 1 < tags.length) {
+                saida += ", ";
+            }
+        }
+
+        saida += "] ##";
+
+        return saida;
     }
 
+    //------- Leitura CSV----------
+    public static Game[] lerArquivoCSV() {
+        Game[] jogos = new Game[0];
+        BufferedReader leitor = null;
+        String linha = "";
+        int quantidade = 0;
+        boolean primeiraLinha = true;
 
+        try {
+            leitor = new BufferedReader(new FileReader("C:\\Users\\natan\\Documents"));
+            linha = leitor.readLine();
 
+            while (linha != null) {
+                if (!primeiraLinha) {
+                    quantidade = quantidade + 1;
+                } else {
+                    primeiraLinha = false;
+                }
+                linha = leitor.readLine();
+            }
+            leitor.close();
+
+            jogos = new Game[quantidade];
+            leitor = new BufferedReader(new FileReader("C:\\Users\\natan\\Documents"));
+            linha = leitor.readLine();
+            primeiraLinha = true;
+
+            int indice = 0;
+            while (linha != null) {
+                if (!primeiraLinha) {
+                    Game jogo = leitura(linha);
+                    jogos[indice] = jogo;
+                    indice = indice + 1;
+                } else {
+                    primeiraLinha = false;
+                }
+                linha = leitor.readLine();
+            }
+
+            leitor.close();
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
+
+        return jogos;
+    }
 }
