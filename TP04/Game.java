@@ -106,6 +106,64 @@ public class Game{
 
     //----- Tratamento de dados-------
 
+    public static String formatArray(String[] array) {
+        String resultado = "";
+
+        if (array == null || array.length == 0) {
+            resultado = "[]";
+        } else {
+            resultado = "[";
+            for (int i = 0; i < array.length; i++) {
+                resultado += array[i];
+                if (i < array.length - 1) {
+                    resultado += ", ";
+                }
+            }
+            resultado += "]";
+        }
+
+        return resultado;
+    }
+
+    public static String removeEspacosBrancos(String s) {
+        String resultado = "";
+        if (s == null) {
+            s = "";
+        }
+
+        int length = s.length();
+        int inicio = 0;
+        int fim = length - 1;
+        boolean encontrouInicio = false;
+        boolean encontrouFim = false;
+
+        while (inicio < length && !encontrouInicio) {
+            char c = s.charAt(inicio);
+            if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+                encontrouInicio = true;
+            } else {
+                inicio++;
+            }
+        }
+
+        while (fim >= inicio && !encontrouFim) {
+            char c = s.charAt(fim);
+            if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+                encontrouFim = true;
+            } else {
+                fim--;
+            }
+        }
+
+        if (inicio <= fim) {
+            for (int i = inicio; i <= fim; i++) {
+                resultado += s.charAt(i);
+            }
+        }
+        return resultado;
+    }
+
+
     public static String[] splitPorAspas(String linhaCsv) {
         String[] campos = new String[14];
         String campoAtual = "";
@@ -133,7 +191,7 @@ public class Game{
             } else {
                 // Adiciona o caractere ao campo, mas ignora as aspas duplas de delimitação
                 if (c != '"') {
-                    campoAtual += c; // Concatenação de String permitida
+                    campoAtual += c;
                 }
             }
         }
@@ -191,7 +249,7 @@ public class Game{
         int tamanho = listaTexto.length();
 
         if(tamanho > 2){
-            for(int i = 1; i < tamanho - 1; i++){
+            for(int i = 0; i < tamanho; i++){
                 semCholchetes += listaTexto.charAt(i);
             }
         }
@@ -226,12 +284,25 @@ public class Game{
     }
 
     public static String[] trataLinguagens(String linguagensTexto){
-        String semColchetes = "";
+        String semColchetesAspas = "";
         int tamanho = linguagensTexto.length();
+        String[] linguagens;
+
         for(int i = 1; i < tamanho - 1; i++){
-            semColchetes += linguagensTexto.charAt(i);
+            char c = linguagensTexto.charAt(i);
+            if (c != '\'') {
+                semColchetesAspas += c;
+            }
         }
-        String[] linguagens = semColchetes.split(",");
+
+        if (semColchetesAspas.length() == 0) {
+            linguagens = new String[0];
+        } else {
+            linguagens = semColchetesAspas.split(",");
+            for(int i = 0; i < linguagens.length; i++){
+                linguagens[i] = removeEspacosBrancos(linguagens[i]);
+            }
+        }
         return linguagens;
     }
 
@@ -242,7 +313,7 @@ public class Game{
         return notaTexto;
     }
 
-    public static String trataEstimativa(String estimativaUsuarios){ //remove caracteres que nao sao digitos
+    public static String trataEstimativa(String estimativaUsuarios){
         String resultado = "";
         int tamanho = estimativaUsuarios.length();
         for(int i = 0; i < tamanho; i++){
@@ -296,67 +367,25 @@ public class Game{
 
     //------- Funcoes de Impressao---------
 
-    public String imprimir() {
-        String saida = "";
-        int i;
-
-        saida += "=> " + id + " ## " + name + " ## " + releaseDate + " ## " + estimatedOwners + " ## " + price + " ## [";
-
-        for (i = 0; i < supportedLanguages.length; i++) {
-            saida += supportedLanguages[i];
-            if (i + 1 < supportedLanguages.length) {
-                saida += ", ";
-            }
-        }
-
-        saida += "] ## " + metacriticScore + " ## " + userScore + " ## " + achievements + " ## [";
-
-        for (i = 0; i < publishers.length; i++) {
-            saida += publishers[i];
-            if (i + 1 < publishers.length) {
-                saida += ", ";
-            }
-        }
-
-        saida += "] ## [";
-
-        for (i = 0; i < developers.length; i++) {
-            saida += developers[i];
-            if (i + 1 < developers.length) {
-                saida += ", ";
-            }
-        }
-
-        saida += "] ## [";
-
-        for (i = 0; i < categories.length; i++) {
-            saida += categories[i];
-            if (i + 1 < categories.length) {
-                saida += ", ";
-            }
-        }
-
-        saida += "] ## [";
-
-        for (i = 0; i < genres.length; i++) {
-            saida += genres[i];
-            if (i + 1 < genres.length) {
-                saida += ", ";
-            }
-        }
-
-        saida += "] ## [";
-
-        for (i = 0; i < tags.length; i++) {
-            saida += tags[i];
-            if (i + 1 < tags.length) {
-                saida += ", ";
-            }
-        }
-
-        saida += "] ##";
-
-        return saida;
+    public void imprimeGame() {
+        // Uso de System.out.printf para garantir a precisão dos floats (%.2f e %.1f)
+        // e printar a linha completa, sem retornar String.
+        
+        System.out.printf("=> %d ## %s ## %s ## %d", 
+            this.id, this.name, this.releaseDate, this.estimatedOwners);
+        
+        System.out.printf(" ## %.2f ## %s", 
+            this.price, formatArray(this.supportedLanguages));
+        
+        System.out.printf(" ## %d ## %.1f ## %d", 
+            this.metacriticScore, this.userScore, this.achievements);
+            
+        System.out.printf(" ## %s ## %s ## %s ## %s ## %s ##\n", 
+            formatArray(this.publishers), 
+            formatArray(this.developers), 
+            formatArray(this.categories), 
+            formatArray(this.genres), 
+            formatArray(this.tags));
     }
 
     //------- Leitura CSV----------
@@ -414,7 +443,7 @@ public class Game{
         while (i < tamanho) {
             String idTexto = "" + jogos[i].getId();
             if (idTexto.equals(entrada)) {
-                saida = jogos[i].imprimir();
+                jogos[i].imprimeGame();
                 i = tamanho;
             } else {
                 i = i + 1;
