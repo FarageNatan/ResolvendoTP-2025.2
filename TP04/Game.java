@@ -1,4 +1,4 @@
-package TP04;
+//package TP04;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -457,7 +457,7 @@ public class Game{
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
+        Game[] jogos = lerArquivoCSV("/tmp/games.csv");
         String entrada = sc.nextLine();
 
         while (!entrada.equals("FIM")) {
