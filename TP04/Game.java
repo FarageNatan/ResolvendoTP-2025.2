@@ -517,7 +517,6 @@ public class Game{
         return arrayOriginal;
     }
 
-    // Troca dois elementos em um Game[] (void; sem return)
     public static void swapGames(Game[] array, int i, int j) {
         Game temp = array[i];
         array[i] = array[j];
@@ -531,7 +530,6 @@ public class Game{
 
         while (esquerda <= direita && !encontrou) {
             int meio = (esquerda + direita) / 2;
-            // comparar chave com o nome do meio
             int cmp = chave.compareTo(array[meio].getName());
             if (cmp == 0) {
                 encontrou = true;
@@ -545,12 +543,79 @@ public class Game{
         return encontrou;
     }
 
+    public static void mergeSortPorPreco(Game[] array) {
+        if (array == null || array.length < 2) {
+            return;
+        }
+        Game[] aux = new Game[array.length];
+        mergeSortRec(array, aux, 0, array.length - 1);
+    }
+
+    private static void mergeSortRec(Game[] array, Game[] aux, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int mid = (left + right) / 2;
+        mergeSortRec(array, aux, left, mid);
+        mergeSortRec(array, aux, mid + 1, right);
+        merge(array, aux, left, mid, right);
+    }
+
+    private static void merge(Game[] array, Game[] aux, int left, int mid, int right) {
+        int i = left;
+        int j = mid + 1;
+        int k = left;
+
+        for (int p = left; p <= right; p++) {
+            aux[p] = array[p];
+        }
+
+        while (i <= mid && j <= right) {
+            // comparar por price asc; se empatar, por id asc
+            boolean escolherLeft;
+            if (aux[i].getPrice() < aux[j].getPrice()) {
+                escolherLeft = true;
+            } else if (aux[i].getPrice() > aux[j].getPrice()) {
+                escolherLeft = false;
+            } else {
+                // empate no price -> desempata por id
+                if (aux[i].getId() <= aux[j].getId()) {
+                    escolherLeft = true;
+                } else {
+                    escolherLeft = false;
+                }
+            }
+
+            if (escolherLeft) {
+                array[k] = aux[i];
+                i = i + 1;
+            } else {
+                array[k] = aux[j];
+                j = j + 1;
+            }
+            k = k + 1;
+        }
+
+        // copiar o restante da metade esquerda (se houver)
+        while (i <= mid) {
+            array[k] = aux[i];
+            i = i + 1;
+            k = k + 1;
+        }
+
+        // restante da metade direita já está no lugar, porque copiamos do aux
+        while (j <= right) {
+            array[k] = aux[j];
+            j = j + 1;
+            k = k + 1;
+        }
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Game[] jogos = lerArquivoCSV("/tmp/games.csv");
-        //Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
 
-        // PRIMEIRA PARTE: entradas de IDs (igual TP-04) -> inserir os jogos no final do vetor 'selecionados'
+        // PRIMEIRA PARTE: entradas de IDs -> inserir os jogos no final do vetor 'selecionados'
         Game[] selecionados = new Game[0];
         String entrada = sc.nextLine();
         while (!entrada.equals("FIM")) {
@@ -561,19 +626,24 @@ public class Game{
             entrada = sc.nextLine();
         }
 
-        // Ordenar os selecionados pelo name antes das pesquisas
-        selecionados = ordenaSelecaoPorNome(selecionados);
+        // Ordenar os selecionados por price (asc) com MergeSort
+        mergeSortPorPreco(selecionados);
 
-        // SEGUNDA PARTE: linhas com nomes a pesquisar
-        String consulta = sc.nextLine();
-        while (!consulta.equals("FIM")) {
-            boolean achou = pesquisaBinaria(selecionados, consulta);
-            if (achou) {
-                System.out.println("SIM");
-            } else {
-                System.out.println("NAO");
-            }
-            consulta = sc.nextLine();
+        System.out.println("| 5 preços mais caros |");
+        int total = selecionados.length;
+        int qtd = 5;
+        int inicioCaros = total - qtd;
+        if (inicioCaros < 0) inicioCaros = 0;
+        for (int i = total - 1; i >= inicioCaros; i--) {
+            selecionados[i].imprimeGame();
+        }
+
+        System.out.println();
+        System.out.println("| 5 preços mais baratos |");
+        int fimBaratos = qtd;
+        if (fimBaratos > total) fimBaratos = total;
+        for (int i = 0; i < fimBaratos; i++) {
+            selecionados[i].imprimeGame();
         }
 
         sc.close();
