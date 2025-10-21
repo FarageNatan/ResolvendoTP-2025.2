@@ -326,42 +326,63 @@ public class Game{
     } 
 
     public static String trataData(String data) {
-        if (data == null || data.isEmpty()) return "0000-00-00";
-
-        String[] partes = data.split(" ");
+        String resultado;
         String mes = "01";
         String dia = "01";
         String ano = "0000";
 
-        // Converter nome do mês para número
-        switch (partes[0]) {
-            case "Jan": mes = "01"; break;
-            case "Feb": mes = "02"; break;
-            case "Mar": mes = "03"; break;
-            case "Apr": mes = "04"; break;
-            case "May": mes = "05"; break;
-            case "Jun": mes = "06"; break;
-            case "Jul": mes = "07"; break;
-            case "Aug": mes = "08"; break;
-            case "Sep": mes = "09"; break;
-            case "Oct": mes = "10"; break;
-            case "Nov": mes = "11"; break;
-            case "Dec": mes = "12"; break;
+        if (data == null || data.length() == 0) {
+            resultado = "0000-00-00";
+        } else {
+            String[] partes = data.split(" ");
+
+            // Converter nome do mês para número
+            if (partes.length > 0) {
+                String mesNome = partes[0];
+                switch (mesNome) {
+                    case "Jan": mes = "01"; break;
+                    case "Feb": mes = "02"; break;
+                    case "Mar": mes = "03"; break;
+                    case "Apr": mes = "04"; break;
+                    case "May": mes = "05"; break;
+                    case "Jun": mes = "06"; break;
+                    case "Jul": mes = "07"; break;
+                    case "Aug": mes = "08"; break;
+                    case "Sep": mes = "09"; break;
+                    case "Oct": mes = "10"; break;
+                    case "Nov": mes = "11"; break;
+                    case "Dec": mes = "12"; break;
+                }
+            }
+
+            // Se há três partes (ex: "Dec 1, 2013")
+            if (partes.length == 3) {
+                // remover a vírgula manualmente (não usamos replace)
+                String diaComVirgula = partes[1];
+                String diaLimpo = "";
+                for (int i = 0; i < diaComVirgula.length(); i++) {
+                    char c = diaComVirgula.charAt(i);
+                    if (c != ',') {
+                        diaLimpo += c;
+                    }
+                }
+                dia = diaLimpo;
+                ano = partes[2];
+            }
+            // Se há duas partes (ex: "Dec 2013")
+            else if (partes.length == 2) {
+                ano = partes[1];
+            }
+
+            // Garantir formato DD/MM/YYYY
+            if (dia.length() == 1) {
+                dia = "0" + dia;
+            }
+
+            resultado = dia + "/" + mes + "/" + ano;
         }
 
-        // Se há três partes (ex: "Dec 1, 2013")
-        if (partes.length == 3) {
-            dia = partes[1].replace(",", "");
-            ano = partes[2];
-        }
-        // Se há duas partes (ex: "Dec 2013")
-        else if (partes.length == 2) {
-            ano = partes[1];
-        }
-
-        // Garantir formato YYYY-MM-DD
-        if (dia.length() == 1) dia = "0" + dia;
-        return dia + "/" + mes + "/" + ano;
+        return resultado;
     }
 
 
@@ -455,14 +476,104 @@ public class Game{
         }
     }
 
+    // Busca e retorna o Game correspondente ao id informado (ou null se não encontrado).
+    // OBS: apenas um return por método.
+    public static Game getGameById(Game[] jogos, String entradaId) {
+        Game encontrado = null;
+        int i = 0;
+        int tamanho = jogos.length;
+        while (i < tamanho) {
+            String idTexto = "" + jogos[i].getId();
+            if (idTexto.equals(entradaId)) {
+                encontrado = jogos[i];
+                i = tamanho;
+            } else {
+                i = i + 1;
+            }
+        }
+        return encontrado;
+    }
+
+    public static Game[] inserirFim(Game[] arrayOriginal, Game elemento) {
+        Game[] novo = new Game[arrayOriginal.length + 1];
+        for (int i = 0; i < arrayOriginal.length; i++) {
+            novo[i] = arrayOriginal[i];
+        }
+        novo[arrayOriginal.length] = elemento;
+        return novo;
+    }
+
+    public static Game[] ordenaSelecaoPorNome(Game[] arrayOriginal){
+        int tamanho = arrayOriginal.length;
+        for (int i = 0; i < (tamanho - 1); i++) {
+            int menor = i;
+            for (int j = (i + 1); j < tamanho; j++){
+                if (arrayOriginal[j].getName().compareTo(arrayOriginal[menor].getName()) < 0){
+                    menor = j;
+                }
+            }
+            swapGames(arrayOriginal, menor, i);
+        }
+        return arrayOriginal;
+    }
+
+    // Troca dois elementos em um Game[] (void; sem return)
+    public static void swapGames(Game[] array, int i, int j) {
+        Game temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    public static boolean pesquisaBinaria(Game[] array, String chave) {
+        boolean encontrou = false;
+        int esquerda = 0;
+        int direita = array.length - 1;
+
+        while (esquerda <= direita && !encontrou) {
+            int meio = (esquerda + direita) / 2;
+            // comparar chave com o nome do meio
+            int cmp = chave.compareTo(array[meio].getName());
+            if (cmp == 0) {
+                encontrou = true;
+            } else if (cmp < 0) {
+                direita = meio - 1;
+            } else {
+                esquerda = meio + 1;
+            }
+        }
+
+        return encontrou;
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Game[] jogos = lerArquivoCSV("/tmp/games.csv");
-        String entrada = sc.nextLine();
+        //Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
 
+        // PRIMEIRA PARTE: entradas de IDs (igual TP-04) -> inserir os jogos no final do vetor 'selecionados'
+        Game[] selecionados = new Game[0];
+        String entrada = sc.nextLine();
         while (!entrada.equals("FIM")) {
-            buscarEImprimirJogo(jogos, entrada);
+            Game encontrado = getGameById(jogos, entrada);
+            if (encontrado != null) {
+                selecionados = inserirFim(selecionados, encontrado);
+            }
             entrada = sc.nextLine();
+        }
+
+        // Ordenar os selecionados pelo name antes das pesquisas
+        selecionados = ordenaSelecaoPorNome(selecionados);
+
+        // SEGUNDA PARTE: linhas com nomes a pesquisar
+        String consulta = sc.nextLine();
+        while (!consulta.equals("FIM")) {
+            boolean achou = pesquisaBinaria(selecionados, consulta);
+            if (achou) {
+                System.out.println("SIM");
+            } else {
+                System.out.println("NAO");
+            }
+            consulta = sc.nextLine();
         }
 
         sc.close();
