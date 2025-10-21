@@ -611,6 +611,81 @@ public class Game{
         }
     }
 
+    // ------- HEAPSORT por estimatedOwners (primário) e id (secundário) -------
+
+    // compara a e b: retorna -1 se a<b, 1 se a>b, 0 se iguais (apenas 1 return)
+    private static int compararPorEstimatedOwners(Game jogo1, Game jogo2) {
+        int resultado;
+        if (jogo1.getEstimatedOwners() < jogo2.getEstimatedOwners()) {
+            resultado = -1;
+        } else if (jogo1.getEstimatedOwners() > jogo2.getEstimatedOwners()) {
+            resultado = 1;
+        } else {
+            // empate em estimatedOwners -> desempata por id
+            if (jogo1.getId() < jogo2.getId()) {
+                resultado = -1;
+            } else if (jogo1.getId() > jogo2.getId()) {
+                resultado = 1;
+            } else {
+                resultado = 0;
+            }
+        }
+        return resultado;
+    }
+
+    // heapify (sift-down) para max-heap usando compararPorEstimatedOwners
+    private static void heapify(Game[] array, int n, int i) {
+        int maior = i;
+        boolean teste = true;
+        while (teste) {
+            int l = 2 * i + 1;
+            int r = 2 * i + 2;
+            maior = i;
+
+            if (l < n) {
+                if (compararPorEstimatedOwners(array[l], array[maior]) > 0) {
+                    maior = l;
+                }
+            }
+
+            if (r < n) {
+                if (compararPorEstimatedOwners(array[r], array[maior]) > 0) {
+                    maior = r;
+                }
+            }
+
+            if (maior != i) {
+                swapGames(array, i, maior);
+                i = maior;
+            } else {
+                teste = false;
+            }
+        }
+    }
+
+    // heapsort: constrói max-heap e extrai para ordenar de forma ascendente ao final
+    public static void heapSortPorEstimatedOwners(Game[] array) {
+        if (array == null || array.length < 2) {
+            return;
+        }
+
+        int tamanho = array.length;
+
+        // construir max-heap
+        for (int i = (tamanho / 2) - 1; i >= 0; i--) {
+            heapify(array, tamanho, i);
+        }
+
+        // extrair elementos do heap
+        for (int i = tamanho - 1; i >= 1; i--) {
+            // mover raiz (maior) para o fim
+            swapGames(array, 0, i);
+            // reduzir heap e heapify na raiz
+            heapify(array, i, 0);
+        }
+    }
+
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Game[] jogos = lerArquivoCSV("/tmp/games.csv");
@@ -626,23 +701,11 @@ public class Game{
             entrada = sc.nextLine();
         }
 
-        // Ordenar os selecionados por price (asc) com MergeSort
-        mergeSortPorPreco(selecionados);
+        // Ordenar os selecionados por estimatedOwners usando Heapsort
+        heapSortPorEstimatedOwners(selecionados);
 
-        System.out.println("| 5 preços mais caros |");
-        int total = selecionados.length;
-        int qtd = 5;
-        int inicioCaros = total - qtd;
-        if (inicioCaros < 0) inicioCaros = 0;
-        for (int i = total - 1; i >= inicioCaros; i--) {
-            selecionados[i].imprimeGame();
-        }
-
-        System.out.println();
-        System.out.println("| 5 preços mais baratos |");
-        int fimBaratos = qtd;
-        if (fimBaratos > total) fimBaratos = total;
-        for (int i = 0; i < fimBaratos; i++) {
+        // Imprimir os registros ordenados
+        for (int i = 0; i < selecionados.length; i++) {
             selecionados[i].imprimeGame();
         }
 
