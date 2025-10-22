@@ -689,8 +689,9 @@ public class Game{
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Game[] jogos = lerArquivoCSV("/tmp/games.csv");
+        //Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
 
-        // PRIMEIRA PARTE: entradas de IDs -> inserir os jogos no final do vetor 'selecionados'
+        // PRIMEIRA PARTE: entradas de IDs (igual TP-04) -> inserir os jogos no final do vetor 'selecionados'
         Game[] selecionados = new Game[0];
         String entrada = sc.nextLine();
         while (!entrada.equals("FIM")) {
@@ -701,12 +702,19 @@ public class Game{
             entrada = sc.nextLine();
         }
 
-        // Ordenar os selecionados por estimatedOwners usando Heapsort
-        heapSortPorEstimatedOwners(selecionados);
+        // Ordenar os selecionados pelo name antes das pesquisas
+        selecionados = ordenaSelecaoPorNome(selecionados);
 
-        // Imprimir os registros ordenados
-        for (int i = 0; i < selecionados.length; i++) {
-            selecionados[i].imprimeGame();
+        // SEGUNDA PARTE: linhas com nomes a pesquisar
+        String consulta = sc.nextLine();
+        while (!consulta.equals("FIM")) {
+            boolean achou = pesquisaBinaria(selecionados, consulta);
+            if (achou) {
+                System.out.println(" SIM");
+            } else {
+                System.out.println(" NAO");
+            }
+            consulta = sc.nextLine();
         }
 
         sc.close();
