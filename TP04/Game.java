@@ -5,6 +5,131 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+class FilaGames {
+    private Game[] array;
+    private int primeiro;
+    private int ultimo;
+    private int tamanho;
+
+    public FilaGames(int capacidade) {
+        array = new Game[capacidade];
+        primeiro = 0;
+        ultimo = 0;
+        tamanho = 0;
+    }
+
+    // Insere (enfileira)
+    public void enfileirar(Game game) {
+        if (tamanho < array.length) {
+            array[ultimo] = game;
+            ultimo = (ultimo + 1) % array.length;
+            tamanho = tamanho + 1;
+        }
+    }
+
+    // Remove (desenfileira)
+    public Game desenfileirar() {
+        Game removido = null;
+        if (tamanho > 0) {
+            removido = array[primeiro];
+            primeiro = (primeiro + 1) % array.length;
+            tamanho = tamanho - 1;
+        }
+        return removido;
+    }
+
+    // Mostra todos os elementos da fila em ordem de atendimento
+    public void mostrar() {
+        int i = 0;
+        while (i < tamanho) {
+            int index = (primeiro + i) % array.length;
+            array[index].imprimeGame();
+            i = i + 1;
+        }
+    }
+
+    // Retorna tamanho atual
+    public int tamanho() {
+        int resp = tamanho;
+        return resp;
+    }
+}
+
+class ListaGames {
+    private Game[] array;
+    private int n;
+
+    public ListaGames(int capacidade) {
+        this.array = new Game[capacidade];
+        this.n = 0;
+    }
+
+    public void inserirInicio(Game game) {
+        for (int i = n; i > 0; i = i - 1) {
+            array[i] = array[i - 1];
+        }
+        array[0] = game;
+        n = n + 1;
+    }
+
+    public void inserir(Game game, int posicao) {
+        for (int i = n; i > posicao; i = i - 1) {
+            array[i] = array[i - 1];
+        }
+        array[posicao] = game;
+        n = n + 1;
+    }
+
+    public void inserirFim(Game game) {
+        array[n] = game;
+        n = n + 1;
+    }
+
+    public Game removerInicio() {
+        Game removido = null;
+        if (n > 0) {
+            removido = array[0];
+            for (int i = 0; i < n - 1; i = i + 1) {
+                array[i] = array[i + 1];
+            }
+            n = n - 1;
+        }
+        return removido;
+    }
+
+    public Game remover(int posicao) {
+        Game removido = null;
+        if (n > 0) {
+            removido = array[posicao];
+            for (int i = posicao; i < n - 1; i = i + 1) {
+                array[i] = array[i + 1];
+            }
+            n = n - 1;
+        }
+        return removido;
+    }
+
+    public Game removerFim() {
+        Game removido = null;
+        if (n > 0) {
+            removido = array[n - 1];
+            n = n - 1;
+        }
+        return removido;
+    }
+
+    public void mostrar() {
+        for (int i = 0; i < n; i = i + 1) {
+            array[i].imprimeGame();
+        }
+    }
+
+    public int tamanho() {
+        int retorno = n;
+        return retorno;
+    }
+}
+
 public class Game{
 
     //------ Atributos da classe Game--------
@@ -476,8 +601,6 @@ public class Game{
         }
     }
 
-    // Busca e retorna o Game correspondente ao id informado (ou null se não encontrado).
-    // OBS: apenas um return por método.
     public static Game getGameById(Game[] jogos, String entradaId) {
         Game encontrado = null;
         int i = 0;
@@ -571,14 +694,12 @@ public class Game{
         }
 
         while (i <= mid && j <= right) {
-            // comparar por price asc; se empatar, por id asc
             boolean escolherLeft;
             if (aux[i].getPrice() < aux[j].getPrice()) {
                 escolherLeft = true;
             } else if (aux[i].getPrice() > aux[j].getPrice()) {
                 escolherLeft = false;
             } else {
-                // empate no price -> desempata por id
                 if (aux[i].getId() <= aux[j].getId()) {
                     escolherLeft = true;
                 } else {
@@ -596,14 +717,12 @@ public class Game{
             k = k + 1;
         }
 
-        // copiar o restante da metade esquerda (se houver)
         while (i <= mid) {
             array[k] = aux[i];
             i = i + 1;
             k = k + 1;
         }
 
-        // restante da metade direita já está no lugar, porque copiamos do aux
         while (j <= right) {
             array[k] = aux[j];
             j = j + 1;
@@ -611,9 +730,6 @@ public class Game{
         }
     }
 
-    // ------- HEAPSORT por estimatedOwners (primário) e id (secundário) -------
-
-    // compara a e b: retorna -1 se a<b, 1 se a>b, 0 se iguais (apenas 1 return)
     private static int compararPorEstimatedOwners(Game jogo1, Game jogo2) {
         int resultado;
         if (jogo1.getEstimatedOwners() < jogo2.getEstimatedOwners()) {
@@ -633,7 +749,6 @@ public class Game{
         return resultado;
     }
 
-    // heapify (sift-down) para max-heap usando compararPorEstimatedOwners
     private static void heapify(Game[] array, int n, int i) {
         int maior = i;
         boolean teste = true;
@@ -663,7 +778,6 @@ public class Game{
         }
     }
 
-    // heapsort: constrói max-heap e extrai para ordenar de forma ascendente ao final
     public static void heapSortPorEstimatedOwners(Game[] array) {
         if (array == null || array.length < 2) {
             return;
@@ -671,16 +785,12 @@ public class Game{
 
         int tamanho = array.length;
 
-        // construir max-heap
         for (int i = (tamanho / 2) - 1; i >= 0; i--) {
-            heapify(array, tamanho, i);
+            heapify(array, tamanho, i); 
         }
 
-        // extrair elementos do heap
         for (int i = tamanho - 1; i >= 1; i--) {
-            // mover raiz (maior) para o fim
             swapGames(array, 0, i);
-            // reduzir heap e heapify na raiz
             heapify(array, i, 0);
         }
     }
@@ -691,31 +801,43 @@ public class Game{
         Game[] jogos = lerArquivoCSV("/tmp/games.csv");
         //Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
 
-        // PRIMEIRA PARTE: entradas de IDs (igual TP-04) -> inserir os jogos no final do vetor 'selecionados'
-        Game[] selecionados = new Game[0];
+        // PRIMEIRA PARTE: leitura dos IDs até "FIM"
+        FilaGames fila = new FilaGames(3000);
         String entrada = sc.nextLine();
         while (!entrada.equals("FIM")) {
-            Game encontrado = getGameById(jogos, entrada);
-            if (encontrado != null) {
-                selecionados = inserirFim(selecionados, encontrado);
+            Game g = Game.getGameById(jogos, entrada);
+            if (g != null) {
+                fila.enfileirar(g);
             }
             entrada = sc.nextLine();
         }
 
-        // Ordenar os selecionados pelo name antes das pesquisas
-        selecionados = ordenaSelecaoPorNome(selecionados);
-
-        // SEGUNDA PARTE: linhas com nomes a pesquisar
-        String consulta = sc.nextLine();
-        while (!consulta.equals("FIM")) {
-            boolean achou = pesquisaBinaria(selecionados, consulta);
-            if (achou) {
-                System.out.println(" SIM");
-            } else {
-                System.out.println(" NAO");
+        // SEGUNDA PARTE: número de operações
+        int numOperacoes = Integer.parseInt(sc.nextLine());
+        int i = 0;
+        while (i < numOperacoes) {
+            String linha = sc.nextLine();
+            String[] partes = linha.split(" ");
+            String comando = partes[0];
+            if (comando.equals("I")) {
+                // Inserir
+                String id = partes[1];
+                Game g = Game.getGameById(jogos, id);
+                if (g != null) {
+                    fila.enfileirar(g);
+                }
+            } else if (comando.equals("R")) {
+                // Remover
+                Game removido = fila.desenfileirar();
+                if (removido != null) {
+                    System.out.println("(R) " + removido.getName());
+                }
             }
-            consulta = sc.nextLine();
+            i = i + 1;
         }
+
+        // Exibir elementos restantes da fila
+        fila.mostrar();
 
         sc.close();
     }
