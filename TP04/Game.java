@@ -5,6 +5,292 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+class NoRB {
+    public Game elemento;
+    public NoRB esq;
+    public NoRB dir;
+    public boolean cor; // true = preto, false = vermelho (não usado)
+
+    public NoRB(Game elemento) {
+        this.elemento = elemento;
+        this.esq = null;
+        this.dir = null;
+        this.cor = false; // qualquer valor, não influencia
+    }
+}
+
+class ArvoreAlvinegra {
+    private NoRB raiz;
+
+    public ArvoreAlvinegra() {
+        raiz = null;
+    }
+
+    public void inserir(Game game) {
+        raiz = inserirRec(raiz, game);
+    }
+
+    private NoRB inserirRec(NoRB i, Game game) {
+        NoRB resp = i;
+
+        if (i == null) {
+            resp = new NoRB(game);
+        } else {
+            int cmp = game.getName().compareTo(i.elemento.getName());
+
+            if (cmp < 0) {
+                i.esq = inserirRec(i.esq, game);
+            } else if (cmp > 0) {
+                i.dir = inserirRec(i.dir, game);
+            }
+            // se for igual, não insere (como no enunciado)
+        }
+
+        return resp;
+    }
+
+    public String pesquisar(String nome) {
+        String caminho = "=>raiz ";
+        String resposta = pesquisarRec(raiz, nome, caminho);
+        return resposta;
+    }
+
+    private String pesquisarRec(NoRB i, String nome, String caminho) {
+        String resp = caminho;
+
+        if (i == null) {
+            resp = resp + "NAO";
+        } else {
+            int cmp = nome.compareTo(i.elemento.getName());
+
+            if (cmp == 0) {
+                resp = resp + "SIM";
+            } else if (cmp < 0) {
+                resp = pesquisarRec(i.esq, nome, caminho + "esq ");
+            } else {
+                resp = pesquisarRec(i.dir, nome, caminho + "dir ");
+            }
+        }
+
+        return resp;
+    }
+}
+
+class No {
+    public Game elemento;
+    public No esq;
+    public No dir;
+
+    public No(Game elemento) {
+        this.elemento = elemento;
+        this.esq = null;
+        this.dir = null;
+    }
+}
+
+class ArvoreBinaria {
+    private No raiz;
+
+    public ArvoreBinaria() {
+        raiz = null;
+    }
+
+    public void inserir(Game game) {
+        raiz = inserir(game, raiz);
+    }
+
+    private No inserir(Game game, No i) {
+        No resp = i;
+
+        if (i == null) {
+            resp = new No(game);
+        } else {
+            int cmp = game.getName().compareTo(i.elemento.getName());
+
+            if (cmp < 0) {
+                i.esq = inserir(game, i.esq);
+            } else if (cmp > 0) {
+                i.dir = inserir(game, i.dir);
+            } 
+            // iguais → não insere
+        }
+
+        return resp;
+    }
+
+    public String pesquisar(String nome) {
+        String caminho = "=>raiz  ";
+        String resultado = pesquisar(nome, raiz, caminho);
+        return resultado;
+    }
+
+    private String pesquisar(String nome, No i, String caminho) {
+        String resp = caminho;
+
+        if (i == null) {
+            resp = resp + "NAO";
+        } else {
+            int cmp = nome.compareTo(i.elemento.getName());
+
+            if (cmp == 0) {
+                resp = resp + "SIM";
+            } else if (cmp < 0) {
+                resp = pesquisar(nome, i.esq, caminho + "esq ");
+            } else {
+                resp = pesquisar(nome, i.dir, caminho + "dir ");
+            }
+        }
+
+        return resp;
+    }
+}
+
+class No2 {
+    public String chave;
+    public No2 esq;
+    public No2 dir;
+
+    public No2(String chave) {
+        this.chave = chave;
+        this.esq = null;
+        this.dir = null;
+    }
+}
+
+class No1 {
+    public int chave;
+    public No1 esq;
+    public No1 dir;
+    public No2 raiz2;
+
+    public No1(int chave) {
+        this.chave = chave;
+        this.esq = null;
+        this.dir = null;
+        this.raiz2 = null;
+    }
+}
+
+class Arvore2 {
+    public No2 raiz;
+
+    public Arvore2() {
+        raiz = null;
+    }
+
+    public void inserir(String chave) {
+        raiz = inserirRec(raiz, chave);
+    }
+
+    private No2 inserirRec(No2 i, String chave) {
+        No2 resp = i;
+
+        if (i == null) {
+            resp = new No2(chave);
+        } else {
+            int cmp = chave.compareTo(i.chave);
+            if (cmp < 0) {
+                i.esq = inserirRec(i.esq, chave);
+            } else if (cmp > 0) {
+                i.dir = inserirRec(i.dir, chave);
+            }
+        }
+        return resp;
+    }
+
+    public String pesquisar(String chave) {
+        String caminho = "";
+        String resp = pesquisarRec(raiz, chave, caminho);
+        return resp;
+    }
+
+    private String pesquisarRec(No2 i, String chave, String caminho) {
+        String resp = caminho;
+
+        if (i == null) {
+            resp = resp + "NAO";
+        } else {
+            int cmp = chave.compareTo(i.chave);
+            if (cmp == 0) {
+                resp = resp + "SIM";
+            } else if (cmp < 0) {
+                resp = pesquisarRec(i.esq, chave, caminho + "esq ");
+            } else {
+                resp = pesquisarRec(i.dir, chave, caminho + "dir ");
+            }
+        }
+
+        return resp;
+    }
+}
+
+class Arvore1 {
+    public No1 raiz;
+
+    public Arvore1() {
+        raiz = null;
+    }
+
+    public void inserirChave(int x) {
+        raiz = inserirRec(raiz, x);
+    }
+
+    private No1 inserirRec(No1 i, int x) {
+        No1 resp = i;
+
+        if (i == null) {
+            resp = new No1(x);
+        } else if (x < i.chave) {
+            i.esq = inserirRec(i.esq, x);
+        } else if (x > i.chave) {
+            i.dir = inserirRec(i.dir, x);
+        }
+
+        return resp;
+    }
+
+    public No1 buscarNo(int x) {
+        return buscarRec(raiz, x);
+    }
+
+    private No1 buscarRec(No1 i, int x) {
+        No1 resp;
+
+        if (i == null) {
+            resp = null;
+        } else if (x == i.chave) {
+            resp = i;
+        } else if (x < i.chave) {
+            resp = buscarRec(i.esq, x);
+        } else {
+            resp = buscarRec(i.dir, x);
+        }
+
+        return resp;
+    }
+
+    public String caminhoPrimeiraArvore(int x) {
+        return caminhoRec(raiz, x, "raiz  ");
+    }
+
+    private String caminhoRec(No1 i, int x, String caminho) {
+        String resp = caminho;
+
+        if (i == null) {
+            resp = resp;
+        } else if (x == i.chave) {
+            resp = resp;
+        } else if (x < i.chave) {
+            resp = caminhoRec(i.esq, x, caminho + "ESQ  ");
+        } else {
+            resp = caminhoRec(i.dir, x, caminho + "DIR  ");
+        }
+
+        return resp;
+    }
+}
+
+
 class FilaGames {
     private Game[] array;
     private int primeiro;
@@ -801,43 +1087,25 @@ public class Game{
         Game[] jogos = lerArquivoCSV("/tmp/games.csv");
         //Game[] jogos = lerArquivoCSV("C:\\Users\\natan\\OneDrive\\Documentos\\ResolvendoTP\\games.csv");
 
-        // PRIMEIRA PARTE: leitura dos IDs até "FIM"
-        FilaGames fila = new FilaGames(3000);
-        String entrada = sc.nextLine();
-        while (!entrada.equals("FIM")) {
-            Game g = Game.getGameById(jogos, entrada);
+        ArvoreAlvinegra arv = new ArvoreAlvinegra();
+
+        // primeira parte: inserir por ID
+        String linha = sc.nextLine();
+        while (!linha.equals("FIM")) {
+            Game g = Game.getGameById(jogos, linha);
             if (g != null) {
-                fila.enfileirar(g);
+                arv.inserir(g);
             }
-            entrada = sc.nextLine();
+            linha = sc.nextLine();
         }
 
-        // SEGUNDA PARTE: número de operações
-        int numOperacoes = Integer.parseInt(sc.nextLine());
-        int i = 0;
-        while (i < numOperacoes) {
-            String linha = sc.nextLine();
-            String[] partes = linha.split(" ");
-            String comando = partes[0];
-            if (comando.equals("I")) {
-                // Inserir
-                String id = partes[1];
-                Game g = Game.getGameById(jogos, id);
-                if (g != null) {
-                    fila.enfileirar(g);
-                }
-            } else if (comando.equals("R")) {
-                // Remover
-                Game removido = fila.desenfileirar();
-                if (removido != null) {
-                    System.out.println("(R) " + removido.getName());
-                }
-            }
-            i = i + 1;
+        // segunda parte: pesquisar por Name
+        String nome = sc.nextLine();
+        while (!nome.equals("FIM")) {
+            System.out.print(nome + ": ");
+            System.out.println(arv.pesquisar(nome));
+            nome = sc.nextLine();
         }
-
-        // Exibir elementos restantes da fila
-        fila.mostrar();
 
         sc.close();
     }
